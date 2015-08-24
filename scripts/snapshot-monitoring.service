@@ -1,0 +1,11 @@
+[Unit]
+Description=Monitors snapshot for disk usage. Deletes a snapshot if usage goes beyond threshold.
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/ruby /root/pgstgtool/scripts/snapshot_monitoring.rb 
+ExecStop=/bin/kill -15 $MAINPID
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

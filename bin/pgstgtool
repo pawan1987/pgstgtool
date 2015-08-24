@@ -1,0 +1,193 @@
+#!/usr/bin/env ruby
+
+#begin # XXX: Remove this begin/rescue before distributing your app
+require 'pgstgtool'
+require 'gli'
+require 'json'
+#rescue LoadError
+#  STDERR.puts "In development, you need to use `bundle exec bin/pgstgtool` to run your app"
+#  STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
+#  STDERR.puts "Feel free to remove this message from bin/pgstgtool now"
+#  exit 64
+#end
+
+class Pgstgtoolbin
+  
+  extend GLI::App
+  
+  program_desc 'Tool helps in managing staging end point for postgres application using lvm snapshot feature'
+  
+  version Pgstgtool::VERSION
+  
+  subcommand_option_handling :normal
+  arguments :strict
+  
+  
+  desc 'Create staging end point on the host'
+  arg_name 'appname'
+  command :create do |c|
+    
+    
+    c.desc 'Config file'
+    c.default_value '/etc/pgstgtool/config/config.yml'
+    c.flag [:f,:file]
+    
+    c.desc 'Task Dir'
+    c.flag [:task_dir]
+    
+    c.desc 'App staging port'
+    c.flag [:stage_port]
+    
+    c.desc 'App prod mount point'
+    c.flag [:prod_mount]
+    
+    c.desc 'App stage mount point'
+    c.flag [:stage_mount]
+    
+    c.desc 'Rake task to run post app stage end point start'
+    c.flag [:task]
+    
+    c.action do |global_options,options,args|
+  
+     app = args.shift
+     
+     if not app
+       raise 'App name should be passed as command line arguement'
+     end
+      
+      config ={}
+      global = {}
+      
+      if options[:file] and File.exist?(options[:file])
+          config_file_path = options[:file]
+          begin
+            config_file = YAML.load(File.read(config_file_path))
+          rescue Errno::ENOENT
+            raise "Failed to load config file #{options[:file]}. Not in yaml format !!"
+          end
+        config = config_file['app'][app] if config_file['app'] && config_file['app'][app]
+        global = config_file['global'] if config_file['global'] 
+      end
+    
+      config['app'] = app
+      
+      if options[:task]
+          config['task'] = options[:task]       
+      end    
+      
+      if options[:stage_port]
+          config['stage_port'] = options[:stage_port]
+      end      
+  
+      if options[:stage_mount]
+          config['stage_mount'] = options[:stage_mount]
+        elsif not config[:stage_mount] and global['stage_dir_pattern']
+          if global['stage_dir_pattern'] =~ /\/APP/
+            config['stage_mount'] = global['stage_dir_pattern'].sub(/\/APP/,"\/#{app}")
+          else
+            raise "stage_dir_pattern(#{global['stage_dir_pattern']}) should contain APP keyword"
+          end
+      end        
+  
+      if options[:prod_mount]
+          config['prod_mount'] = options[:prod_mount]
+        elsif not config['prod_mount'] and global['prod_dir_pattern']
+          if global['prod_dir_pattern'] =~ /\/APP/
+            config['prod_mount'] = global['prod_dir_pattern'].sub(/\/APP/,"\/#{app}")
+          else
+            raise "prod_dir_pattern(#{global['prod_dir_pattern']}) should contain APP keyword"
+          end
+      end 
+      
+      if options[:task_dir]
+          config['task_dir'] = options[:task_dir]
+        elsif not config['task_dir'] and global['task_dir']
+          config['task_dir'] = global['task_dir']
+      end
+      
+      puts config.inspect
+      Pgstgtool::Create.new(config).create
+      
+      puts "Stage point is ready and running on port #{config['stage_port']} and data dir #{config['stage_mount']}"
+    end
+  end
+  
+  
+ desc 'Delete postgres stage end point on the host'
+  arg_name 'appname'
+  command :delete do |c|
+    
+    
+    c.desc 'Config file'
+    c.default_value '/etc/pgstgtool/config/config.yml'
+    c.flag [:f,:file]
+    
+    c.desc 'App stage mount point'
+    c.flag [:stage_mount]
+    
+    
+    c.action do |global_options,options,args|
+  
+     app = args.shift
+     
+     if not app
+       raise 'App name should be passed as command line arguement'
+     end
+      
+      config ={}
+      global = {}
+      
+      if options[:file] and File.exist?(options[:file])
+          config_file_path = options[:file]
+          begin
+            config_file = YAML.load(File.read(config_file_path))
+          rescue Errno::ENOENT
+            raise "Failed to load config file #{options[:file]}. Not in yaml format !!"
+          end
+        config = config_file['app'][app] if config_file['app'] && config_file['app'][app]
+        global = config_file['global'] if config_file['global'] 
+      end
+    
+      config['app'] = app   
+  
+      if options[:stage_mount]
+          config['stage_mount'] = options[:stage_mount]
+        elsif not config[:stage_mount] and global['stage_dir_pattern']
+          if global['stage_dir_pattern'] =~ /\/APP/
+            config['stage_mount'] = global['stage_dir_pattern'].sub(/\/APP/,"\/#{app}")
+          else
+            raise "stage_dir_pattern(#{global['stage_dir_pattern']}) should contain APP keyword"
+          end
+      end        
+      
+      Pgstgtool::Delete.new(config).delete
+      
+      puts "Deleted stage end point #{config['stage_mount']} !!"
+    end
+  end
+  
+  pre do |global,command,options,args|
+    # Pre logic here
+    # Return true to proceed; false to abort and not call the
+    # chosen command
+    # Use skips_pre before a command to skip this block
+    # on that command only
+    true
+  end
+  
+  post do |global,command,options,args|
+    # Post logic here
+    # Use skips_post before a command to skip this
+    # block on that command only
+  end
+  
+  on_error do |exception|
+    # Error logic here
+    # return false to skip default error handling
+    true
+  end
+  
+  exit run(ARGV)
+end
+
+exit Pgstgtoolbin.run(ARGV)
