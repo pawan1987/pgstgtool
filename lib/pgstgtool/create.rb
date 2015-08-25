@@ -57,7 +57,7 @@ module Pgstgtool
     
     def pre_start_setup
       pid_file = @options['stage_mount'] + '/postmaster.pid'
-      recovery_file = @options['stage_mount'] + 'recovery.conf'
+      recovery_file = @options['stage_mount'] + '/recovery.conf'
       File.delete(pid_file) if File.exist?(pid_file)
       File.delete(recovery_file) if File.exist?(recovery_file)
     end
