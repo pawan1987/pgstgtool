@@ -9,13 +9,7 @@ module Pgstgtool
     
     def is_valid_port(port='')
       raise "Invalid port #{port}" if port.to_s !~ /^\d+$/
-      command = "/usr/bin/netstat -ntpl|awk \'{print $4}\'|egrep \':#{port}\\b\'"
-      output = Open3.capture3(command)
-      if output[2].success?
-        raise "#{port} is already in use"
-      else
-        return true
-      end
+      raise "port #{port} already in use" if system("lsof -i:#{port}", out: '/dev/null')
     end
     
     def mount_point(dir='')
