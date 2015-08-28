@@ -70,7 +70,16 @@ module Pgstgtool
     
     def start_stage
       logfile = "/tmp/#{@options['app']}" + '_' + "#{Time.now.to_i}"
-      Pgstgtool::Postgres.new.start(@options['stage_mount'],@options['stage_port'],logfile)
+      pgobj = Pgstgtool::Postgres.new
+      if not pgobj.start(@options['stage_mount'],@options['stage_port'],logfile)
+        puts "-------"
+        puts pgobj.tail_pglog(@options['stage_mount'],10)
+        puts "-------"
+        puts "Rolling back !!"
+        umount(@options['stage_mount'])
+        Pgstgtool::Lvm.new.remove_lv(@options['snapshot_name'])
+        raise "Postgres failed to start !!"
+      end
       puts "postgres started on port #{@options['stage_port']}"
     end
     

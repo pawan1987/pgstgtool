@@ -15,7 +15,12 @@ module Pgstgtool
       command = "/usr/bin/su #{user} -c \'#{@pgctlcmd} start -D #{datadir} -o \"-p #{port}\" -l #{logfile} \'"
       Pgstgtool::Command.run(command)
       sleep 2
-      raise "Failed to start postgres. command => \n #{command}\n" if verify_postgres(port) !~ /^\d+$/  
+      #raise "Failed to start postgres. command => \n #{command}\n"
+      if verify_postgres(port) !~ /^\d+$/
+        return false
+      else
+        return true
+      end
     end
     
     def verify_postgres(port)
@@ -29,6 +34,15 @@ module Pgstgtool
       raise "#{datadir}/postgres.pid file missing" if not File.directory? datadir
       command = "/usr/bin/su #{user} -c \'#{@pgctlcmd} stop -D #{datadir}\'"
       Pgstgtool::Command.run(command)
+    end
+    
+    #tail last n lines of log
+    def tail_pglog(datadir,n)
+      log_dir =  datadir + '/pg_log'
+      log_file = `ls -t #{log_dir}|head -1`
+      log_file = log_dir + '/' + log_file
+      message = `tail -#{n} #{log_file}`
+      message
     end
     
   end
