@@ -31,8 +31,6 @@ module Pgstgtool
       raise "#{datadir} doesn't exist" if not File.directory? datadir
       Dir.chdir datadir
       pgresetxlogcmd = "/usr/pgsql-#{pgversion}/bin/pg_resetxlog"
-      xlog_dir = 'pg_xlog/archive_status'
-      FileUtils.mkdir_p xlog_dir unless File.exists?(xlog_dir)
       command = "/usr/bin/su #{user} -c \'#{pgresetxlogcmd} -f datadir\'"
       Pgstgtool::Command.run(command)
     end

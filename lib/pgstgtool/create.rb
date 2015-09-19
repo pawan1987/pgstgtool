@@ -58,8 +58,8 @@ module Pgstgtool
     
     def fix_perm
       Dir.chdir options['stage_mount']
-      FileUtils.chmod_R 0700, options['stage_mount']
-      FileUtils.chown_R 'postgres', 'postgres', options['stage_mount']
+      FileUtils.chmod_R 0700, options['stage_mount'] + '/.'
+      FileUtils.chown_R 'postgres', 'postgres', options['stage_mount'] + '/.'
     end
     
     def delete_conf_files
@@ -74,6 +74,8 @@ module Pgstgtool
       as_user 'postgres' do
         src = '/etc/pgstgtool/config/' + options['pgversion'] + '/.'
         FileUtils.cp_r src, options['stage_mount']
+        xlog_dir = 'pg_xlog/archive_status'
+        FileUtils.mkdir_p xlog_dir unless File.exists?(xlog_dir)
       end
     end
     
