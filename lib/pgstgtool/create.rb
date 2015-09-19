@@ -58,15 +58,19 @@ module Pgstgtool
     
     def fix_perm
       Dir.chdir options['stage_mount']
-      FileUtils.chmod_R 0700, options['stage_mount'] + '/.'
-      FileUtils.chown_R 'postgres', 'postgres', options['stage_mount'] + '/.'
+      FileUtils.chmod_R 0700, Dir.glob('*')
+      FileUtils.chown_R 'postgres', 'postgres', Dir.glob('*')
     end
     
     def delete_conf_files
       as_user 'postgres' do
         Dir.chdir options['stage_mount']
         files_to_rm = ['postgresql.conf','pg_log','pg_xlog','pg_hba.conf','recovery.conf','postmaster.pid']
-        FileUtils.rm files_to_rm
+        begin
+          FileUtils.rm files_to_rm
+        rescue Exception => msg
+          puts msg
+        end
       end
     end
     
@@ -124,8 +128,8 @@ module Pgstgtool
         start_stage
         run_task
       rescue Exception => msg
-        roll_back
         puts msg
+        roll_back
         exit 2
       end
     end
