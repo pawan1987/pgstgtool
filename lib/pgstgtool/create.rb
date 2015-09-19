@@ -91,6 +91,7 @@ module Pgstgtool
       puts "-------"
       puts "Rolling back !!"
       begin
+        Dir.chdir
         umount(options['stage_mount'])
       rescue
         puts "#{options['stage_mount']} not mounted"
