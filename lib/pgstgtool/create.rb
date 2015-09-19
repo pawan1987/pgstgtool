@@ -59,20 +59,20 @@ module Pgstgtool
     def fix_perm
       Dir.chdir options['stage_mount']
       FileUtils.chmod_R 0700, options['stage_mount']
-      FileUtils.chown 'postgres', 'postgres', options['stage_mount']
+      FileUtils.chown_R 'postgres', 'postgres', options['stage_mount']
     end
     
     def delete_conf_files
       as_user 'postgres' do
         Dir.chdir options['stage_mount']
-        files_to_rm = ['postgres.conf','pg_log','pg_xlog','pg_hba.conf','recovery.conf','postmaster.pid']
+        files_to_rm = ['postgresql.conf','pg_log','pg_xlog','pg_hba.conf','recovery.conf','postmaster.pid']
         FileUtils.rm files_to_rm
       end
     end
     
     def copy_conf_files
       as_user 'postgres' do
-        src = '/etc/pgstgtool/config/' + options['pgversion']
+        src = '/etc/pgstgtool/config/' + options['pgversion'] + '/.'
         FileUtils.cp_r src, options['stage_mount']
       end
     end
@@ -96,7 +96,7 @@ module Pgstgtool
       puts "-------"
       puts "Rolling back !!"
       begin
-        Dir.chdir
+        #Dir.chdir
         umount(options['stage_mount'])
       rescue
         puts "#{options['stage_mount']} not mounted"
