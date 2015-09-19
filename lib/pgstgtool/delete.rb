@@ -26,7 +26,7 @@ module Pgstgtool
     end
     
     def stop_stage
-      Pgstgtool::Postgres.new.stop(@options['stage_mount'])
+      Pgstgtool::Postgres.new({'pgctlcmd' => @options['pgctlcmd']}).stop(@options['stage_mount'])
       puts "postgres stopped"
     end
     

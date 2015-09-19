@@ -44,6 +44,9 @@ class Pgstgtoolbin
     c.desc 'App stage mount point'
     c.flag [:stage_mount]
     
+    c.desc 'postgres version'
+    c.flag [:pgversion]
+    
     c.desc 'Rake task to run post app stage end point start'
     c.flag [:task]
     
@@ -78,12 +81,26 @@ class Pgstgtoolbin
       if options[:stage_port]
           config['stage_port'] = options[:stage_port]
       end      
+
+      if options[:pgversion] 
+	 config['pgversion'] = options[:pgversion]
+      end
+
+      if not config['pgversion']
+      	config['pgversion'] = '9.4'
+      end
+
+      if config['pgversion'] == '9.3'
+	config['pgctlcmd'] ='/usr/pgsql-9.3/bin/pg_ctl'
+	else
+	config['pgctlcmd'] = '/usr/pgsql-9.4/bin/pg_ctl'
+      end
   
       if options[:stage_mount]
           config['stage_mount'] = options[:stage_mount]
         elsif not config[:stage_mount] and global['stage_dir_pattern']
-          if global['stage_dir_pattern'] =~ /\/APP/
-            config['stage_mount'] = global['stage_dir_pattern'].sub(/\/APP/,"\/#{app}")
+          if global['stage_dir_pattern'] =~ /VERSION\/APP/
+            config['stage_mount'] = global['stage_dir_pattern'].sub(/\/APP/,"\/#{app}").sub(/\/VERSION/,"\/#{config['pgversion']}")
           else
             raise "stage_dir_pattern(#{global['stage_dir_pattern']}) should contain APP keyword"
           end
@@ -92,8 +109,8 @@ class Pgstgtoolbin
       if options[:prod_mount]
           config['prod_mount'] = options[:prod_mount]
         elsif not config['prod_mount'] and global['prod_dir_pattern']
-          if global['prod_dir_pattern'] =~ /\/APP/
-            config['prod_mount'] = global['prod_dir_pattern'].sub(/\/APP/,"\/#{app}")
+          if global['prod_dir_pattern'] =~ /VERSION\/APP/
+            config['prod_mount'] = global['prod_dir_pattern'].sub(/\/APP/,"\/#{app}").sub(/\/VERSION/,"\/#{config['pgversion']}")
           else
             raise "prod_dir_pattern(#{global['prod_dir_pattern']}) should contain APP keyword"
           end
@@ -149,12 +166,28 @@ class Pgstgtoolbin
       end
     
       config['app'] = app   
+
+
+      if options[:pgversion] 
+	 config['pgversion'] = options[:pgversion]
+      end
+
+      if not config['pgversion']
+      	config['pgversion'] = '9.4'
+      end
+
+      if config['pgversion'] == '9.3'
+	config['pgctlcmd'] ='/usr/pgsql-9.3/bin/pg_ctl'
+	else
+	config['pgctlcmd'] = '/usr/pgsql-9.4/bin/pg_ctl'
+	end
+
   
       if options[:stage_mount]
           config['stage_mount'] = options[:stage_mount]
         elsif not config[:stage_mount] and global['stage_dir_pattern']
-          if global['stage_dir_pattern'] =~ /\/APP/
-            config['stage_mount'] = global['stage_dir_pattern'].sub(/\/APP/,"\/#{app}")
+          if global['stage_dir_pattern'] =~ /VERSION\/APP/
+            config['stage_mount'] = global['stage_dir_pattern'].sub(/\/APP/,"\/#{app}").sub(/\/VERSION/,"\/#{config['pgversion']}")
           else
             raise "stage_dir_pattern(#{global['stage_dir_pattern']}) should contain APP keyword"
           end

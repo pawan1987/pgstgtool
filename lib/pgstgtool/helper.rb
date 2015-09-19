@@ -33,8 +33,10 @@ module Pgstgtool
     def mapper_to_lv(lv)
       if lv =~ /\/dev\/mapper\/(.*?)-(.*)/
         lv = '/dev/' + $1 + '/' + $2
+	lv = lv.gsub('--','-')
       end
-      lv
+	puts 'running from lv'
+	lv
     end
     
     def lv_to_mapper(lv)
