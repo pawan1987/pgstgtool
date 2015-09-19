@@ -1,5 +1,6 @@
 require 'open3'
 require 'timeout'
+require 'etc'
 module Pgstgtool
   module Helper
     
@@ -98,6 +99,21 @@ module Pgstgtool
       release_dir(dir)
       command="/usr/bin/umount #{dir} "
       Pgstgtool::Command.run(command)
+    end
+    
+    def as_user(user, &block)
+	  # Find the user in the password database.
+	  u = (user.is_a? Integer) ? Etc.getpwuid(user) : Etc.getpwnam(user)
+	
+	  # Fork the child process. Process.fork will run a given block of code
+	  # in the child process.
+	  Process.fork do
+		 # We're in the child. Set the process's user ID.
+		 Process.uid = u.uid
+	
+		# Invoke the caller's block of code.
+		block.call(user)
+	  end
     end
     
   end

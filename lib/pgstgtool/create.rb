@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'etc'
 module Pgstgtool
   class Create
 
@@ -62,14 +63,18 @@ module Pgstgtool
     end
     
     def delete_conf_files
-      Dir.chdir options['stage_mount']
-      files_to_rm = ['postgres.conf','pg_log','pg_xlog','pg_hba.conf','recovery.conf','postmaster.pid']
-      FileUtils.rm files_to_rm
+      as_user 'postgres' do
+        Dir.chdir options['stage_mount']
+        files_to_rm = ['postgres.conf','pg_log','pg_xlog','pg_hba.conf','recovery.conf','postmaster.pid']
+        FileUtils.rm files_to_rm
+      end
     end
     
     def copy_conf_files
+      as_user 'postgres' do
         src = '/etc/pgstgtool/config/' + options['pgversion']
         FileUtils.cp_r src, options['stage_mount']
+      end
     end
     
     def pre_start_setup
