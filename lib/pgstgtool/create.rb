@@ -74,7 +74,7 @@ module Pgstgtool
       as_user 'postgres' do
         src = '/etc/pgstgtool/config/' + options['pgversion'] + '/.'
         FileUtils.cp_r src, options['stage_mount']
-        xlog_dir = 'pg_xlog/archive_status'
+        xlog_dir = options['stage_mount'] + 'pg_xlog/archive_status'
         FileUtils.mkdir_p xlog_dir unless File.exists?(xlog_dir)
       end
     end
