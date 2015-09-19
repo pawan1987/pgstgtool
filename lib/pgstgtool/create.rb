@@ -85,6 +85,7 @@ module Pgstgtool
     end
     
     def roll_back
+      pgobj = Pgstgtool::Postgres.new({'pgversion' => options['pgversion'], 'datadir' => options['stage_mount']})
       puts "-------"
       puts pgobj.tail_pglog(10)
       puts "-------"
