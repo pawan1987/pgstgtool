@@ -67,7 +67,7 @@ module Pgstgtool
       out,err,status = Open3.capture3(command)
       if status.success?
           out.split.each do |k|
-            if pid_exist(k.to_i)
+            if pid_exist(k.to_i) and not (k.to_s.eql?(Process.pid.to_s))
               begin
                   Process.kill("TERM", k.to_i)
                   Timeout::timeout(30) do
