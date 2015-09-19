@@ -89,12 +89,6 @@ class Pgstgtoolbin
       if not config['pgversion']
       	config['pgversion'] = '9.4'
       end
-
-      if config['pgversion'] == '9.3'
-	config['pgctlcmd'] ='/usr/pgsql-9.3/bin/pg_ctl'
-	else
-	config['pgctlcmd'] = '/usr/pgsql-9.4/bin/pg_ctl'
-      end
   
       if options[:stage_mount]
           config['stage_mount'] = options[:stage_mount]
@@ -175,12 +169,6 @@ class Pgstgtoolbin
       if not config['pgversion']
       	config['pgversion'] = '9.4'
       end
-
-      if config['pgversion'] == '9.3'
-	config['pgctlcmd'] ='/usr/pgsql-9.3/bin/pg_ctl'
-	else
-	config['pgctlcmd'] = '/usr/pgsql-9.4/bin/pg_ctl'
-	end
 
   
       if options[:stage_mount]

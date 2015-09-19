@@ -92,6 +92,7 @@ module Pgstgtool
       release_file_handles(dir)
     end
     
+    
     def umount(dir)
       is_dir(dir)
       release_dir(dir)

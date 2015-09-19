@@ -1,3 +1,4 @@
+require 'fileutils'
 module Pgstgtool
   class Create
 
@@ -54,48 +55,27 @@ module Pgstgtool
       puts "Snapshot #{@options['snapshot_name']} mounted on #{@options['stage_mount']}"
     end
     
-    def del_files
-      pid_file = @options['stage_mount'] + '/postmaster.pid'
-      recovery_file = @options['stage_mount'] + '/recovery.conf'
-      hba_file = @options['stage_mount'] + '/pg_hba.conf'
-      conf_file = @options['stage_mount'] + '/postgresql.conf'
-      pg_log = @options['stage_mount'] + '/pg_log'
-      pg_xlog = @options['stage_mount'] + '/pg_xlog'
-      File.delete(pid_file) if File.exist?(pid_file)
-      File.delete(recovery_file) if File.exist?(recovery_file)
-      File.delete(hba_file) if File.exist?(hba_file)
-      File.delete(conf_file) if File.exist?(conf_file)
-      File.delete(pg_log) if File.exist?(pg_log)
-      File.delete(pg_xlog) if File.exist?(pg_xlog)
+    def fix_perm
+      Dir.chdir options['stage_mount']
+      FileUtils.chmod_R 0700, options['stage_mount']
+      FileUtils.chown 'postgres', 'postgres', options['stage_mount']
     end
     
-    def copy_files
-      `cp -pr /etc/pgstgtool/config/* #{@options['stage_mount']}`
-      Dir.chdir(@options['stage_mount'])
-      `mkdir -p pg_xlog/archive_status`
-      `mkdir -p pg_log`
+    def delete_conf_files
+      Dir.chdir options['stage_mount']
+      files_to_rm = ['postgres.conf','pg_log','pg_xlog','pg_hba.conf','recovery.conf','postmaster.pid']
+      FileUtils.rm files_to_rm
     end
     
-    def correct_perm
-      Dir.chdir(@options['stage_mount'])
-      `chmod 0700 -R .`
-      `chown postgres. -R .`
-    end
-    
-    def reset_xlog
-      if @options['pgversion'] == '9.3'
-          command = "sudo -u postgres /usr/pgsql-9.3/bin/pg_resetxlog -f #{@options['stage_mount']}"
-        else
-          command = "sudo -u postgres /usr/pgsql-9.4/bin/pg_resetxlog -f #{@options['stage_mount']}"
-      end
-      Pgstgtool::Command.run(command)
+    def copy_conf_files
+        src = '/etc/pgstgtool/config/' + options['pgversion']
+        FileUtils.cp_r src, options['stage_mount']
     end
     
     def pre_start_setup
-     del_files
-     copy_files
-     correct_perm
-     reset_xlog
+     delete_conf_files
+     copy_conf_files
+     fix_perm
     end
 
     def run_task
@@ -103,29 +83,42 @@ module Pgstgtool
         Pgstgtool::RakeTask.new('rake_dir'=>@options['task_dir']).run_task(@options['task'],@options['stage_mount'],@options['stage_port'])
       end
     end
+    
+    def roll_back
+      puts "-------"
+      puts pgobj.tail_pglog(10)
+      puts "-------"
+      puts "Rolling back !!"
+      begin
+        umount(options['stage_mount'])
+      rescue
+        puts "#{options['stage_mount']} not mounted"
+      end
+      Pgstgtool::Lvm.new.remove_lv(options['snapshot_name'])
+      raise "Postgres failed to start !!"
+    end
 
     def start_stage
       logfile = "/tmp/#{@options['app']}" + '_' + "#{Time.now.to_i}"
-      pgobj = Pgstgtool::Postgres.new({'pgctlcmd' =>@options['pgctlcmd']})
-      if not pgobj.start(@options['stage_mount'],@options['stage_port'],logfile)
-        puts "-------"
-        puts pgobj.tail_pglog(@options['stage_mount'],10)
-        puts "-------"
-        puts "Rolling back !!"
-        umount(@options['stage_mount'])
-        Pgstgtool::Lvm.new.remove_lv(@options['snapshot_name'])
-        raise "Postgres failed to start !!"
-      end
+      pgobj = Pgstgtool::Postgres.new({'pgversion' => options['pgversion'], 'datadir' => options['stage_mount']})
+      pgobj.reset_pgxlog
+      pgobj.start(options['stage_port'],logfile)
       puts "postgres started on port #{@options['stage_port']}"
     end
 
     def create
       prod_lv
       create_snapshot
-      mount_snapshot
-      pre_start_setup
-      start_stage
-      run_task
+      begin
+        mount_snapshot
+        pre_start_setup
+        start_stage
+        run_task
+      rescue Exception => msg
+        roll_back
+        puts msg
+        exit 2
+      end
     end
 
   end
