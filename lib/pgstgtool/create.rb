@@ -58,8 +58,6 @@ module Pgstgtool
     
     def fix_perm
       Dir.chdir options['stage_mount']
-      #sleep to clear cache
-      sleep 1
       FileUtils.chmod_R 0700, Dir.glob('*')
       FileUtils.chown_R 'postgres', 'postgres', Dir.glob('*')
     end
@@ -73,6 +71,7 @@ module Pgstgtool
         rescue Exception => msg
           puts msg
         end
+        sleep 1
       end
     end
     
@@ -80,8 +79,11 @@ module Pgstgtool
       as_user 'postgres' do
         src = '/etc/pgstgtool/config/' + options['pgversion'] + '/.'
         FileUtils.cp_r src, options['stage_mount']
-        xlog_dir = options['stage_mount'] + 'pg_xlog/archive_status'
-        FileUtils.mkdir_p xlog_dir unless File.exists?(xlog_dir)
+        as_user 'postgres' do
+          xlog_dir = options['stage_mount'] + 'pg_xlog/archive_status'
+          FileUtils.mkdir_p xlog_dir unless File.exists?(xlog_dir)
+          puts xlog_dir
+        end
       end
     end
     
