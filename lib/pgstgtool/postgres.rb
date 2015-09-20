@@ -45,7 +45,7 @@ module Pgstgtool
     def stop
       raise "#{datadir}/postgres.pid file missing" if not File.directory? datadir
       pgctlcmd = "/usr/pgsql-#{pgversion}/bin/pg_ctl"
-      command = "/usr/bin/su #{user} -c \'#{pgctlcmd} stop -D #{datadir}\'"
+      command = "/usr/bin/su #{user} -c \'#{pgctlcmd} stop -m immediate -D #{datadir}\'"
       Pgstgtool::Command.run(command)
     end
     
