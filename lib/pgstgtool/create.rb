@@ -58,6 +58,8 @@ module Pgstgtool
     
     def fix_perm
       Dir.chdir options['stage_mount']
+      #sleep to clear cache
+      sleep 1
       FileUtils.chmod_R 0700, Dir.glob('*')
       FileUtils.chown_R 'postgres', 'postgres', Dir.glob('*')
     end
