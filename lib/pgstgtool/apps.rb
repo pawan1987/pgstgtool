@@ -13,11 +13,6 @@ module Pgstgtool
       @override_apps = opt['override_apps'] || {}
       @override_global = opt['override_global'] || {}
       @name = opt['name']
-      begin
-      	POSIX_MQ.unlink('/pgstgtool_mq')
-      rescue
-	#nothing to do
-      end 
    end
     
     def logger
