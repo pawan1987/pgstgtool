@@ -16,4 +16,7 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency('aruba')
   s.add_runtime_dependency('gli','2.13.1')
   s.add_runtime_dependency('di-ruby-lvm','0.1.3')
+  s.add_runtime_dependency('colorize')
+  s.add_runtime_dependency('rake')
+  s.add_runtime_dependency('posix_mq', '2.2.0')
 end

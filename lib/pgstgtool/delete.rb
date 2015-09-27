@@ -1,41 +1,75 @@
+require_relative 'logger'
+require_relative 'command'
+require_relative 'postgres'
+require_relative 'helper'
 
 module Pgstgtool
   class Delete
     
-    attr_accessor :options
+    attr_accessor :app
+    attr_accessor :stage_lvm
     include Pgstgtool::Helper
     
-    def initialize(config={})
-      @options = config
-      raise "stage_mount not defined #{@options['stage_mount']}" if not @options['stage_mount']
+    def initialize(app)
+      @app = app
     end
     
     #given prod mount dir, it fetches lvpath from /proc/mounts file
     def stage_lv
-      mline = open('/proc/mounts').grep(/\ #{@options['stage_mount']}\ /)[0]
-      raise "#{@options['stage_mount']} is not a mountpoint" if not mline
-      @options['stage_lv'] = mapper_to_lv(mline.split()[0])
-      is_lvm(@options['stage_lv'])
+      mline = open('/proc/mounts').grep(/\ #{datadir}\ /)[0]
+      raise "#{datadir} is not a mountpoint" if not mline
+      @stage_lvm = mapper_to_lv(mline.split()[0])
+      is_lvm @stage_lvm
+    end
+    
+    def datadir
+      app['datadir']
+    end
+    
+    def postgres
+      return @postgres if @postgres
+      @postgres = Pgstgtool::Postgres.new(app)
     end
     
     def delete_snapshot
-      umount(@options['stage_mount'])
-      @lvm = Pgstgtool::Lvm.new
-      @lvm.remove_lv(@options['stage_lv'])
-      puts "Snapshot deleted with lv #{@options['stage_lv']}"
+      umount(datadir)
+      lvm.remove_lv(stage_lvm)
+      logger.info "Snapshot deleted with lv #{stage_lvm}"
     end
     
-    def stop_stage
-      Pgstgtool::Postgres.new({'pgversion' => @options['pgversion'],'datadir' => options['stage_mount']}).stop
-      puts "postgres stopped"
+    def stop
+        postgres.stop
+        logger.info("Postgres stopped")
+    end
+    
+    def logger
+      return @logger if @logger
+      @logger = Pgstgtool::CustomLogger.new
+    end
+    
+    def lvm
+      return @lvm if @lvm
+      Pgstgtool::Lvm.new
     end
     
     def delete
-      stage_lv
-      stop_stage
-      delete_snapshot
+      begin
+        stage_lv
+        stop
+        delete_snapshot
+      rescue Exception => e
+        msg = e.message + e.backtrace.inspect
+        logger.error(msg) 
+        return false
+      end 
     end
     
   end
 end
+
+
+
+#test module
+
+
   

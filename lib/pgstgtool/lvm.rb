@@ -1,34 +1,49 @@
-
-#require di-ruby-lvm
-#expects lvpath in the format /dev/{vol_group_name}/{logical_volume_name}
 require 'lvm'
+require_relative 'helper'
 
 module Pgstgtool
   class Lvm
     
     include Pgstgtool::Helper
     attr_accessor :lvmobj
-    attr_accessor :lvcreate
-    attr_accessor :lvremove
+    attr_accessor :options
     
     def initialize(options={})
       @lvmobj = LVM::LVM.new
-      @lvcreatecmd = options['lvcreatecmd'] || '/usr/sbin/lvcreate'
-      @lvremovecmd = options['lvremovecmd'] || '/usr/sbin/lvremove'
+      @options = options
     end
     
     def create_snapshot(lvpath, snapshotname, size)
       raise "lvname should be complete lv path => #{lvpath}" if lvpath !~ /^\/dev\/(.*?)\/(.*?)/
       raise "Size should be in multiple of bytes (\d(G|M|g|m)) => #{size}" if size.to_s !~ /^\d+(G|M|g|m)/
-      command = "#{@lvcreatecmd} -L#{size} -s -n #{snapshotname} #{lvpath}"
-      Pgstgtool::Command.run(command)
+      command = "#{lvcreate} -L#{size} -s -n #{snapshotname} #{lvpath}"
+      status, out = Pgstgtool::Command.run_as_user('root',command)
+      unless status
+        if snapshotname =~ /_pgstg$/
+            delete_snapshot(snapshotname)
+            command = "#{lvcreate} -L#{size} -s -n #{snapshotname} #{lvpath}"
+            status, out = Pgstgtool::Command.run_as_user('root',command)
+            if status
+                return [status,out]
+            end
+            
+        end
+        raise "Failed to create snapshot #{out}"
+      end
+    end
+    
+    def lvcreate
+      options['lvcreate'] || '/usr/sbin/lvcreate'
+    end
+    
+    def lvremove
+      options['lvremove'] || '/usr/sbin/lvremove'
     end
     
     def remove_lv(lvpath)
       raise "Provide complete snapshot lv path => #{lvpath}" if lvpath !~ /^\/dev\/(.*?)\/(.*?)/
-      command = "#{@lvremovecmd} --force #{lvpath}"
-      puts command
-      Pgstgtool::Command.run(command)
+      command = "#{lvremove} --force #{lvpath}"
+      Pgstgtool::Command.run_as_user('root',command)
     end
     
     def get_lv_attributes(lvpath)
@@ -39,6 +54,19 @@ module Pgstgtool
             nil
         end
       end
+    end
+    
+    def snapshot_status(lvpath)
+        lvobj = get_lv_attributes(lvpath)    
+        output = {}
+        volume_type = lvobj['volume_type']
+        if volume_type =~ /snapshot/
+          output['data_percent'] = lvobj['data_percent']
+          output['snapshot_invalid'] = lvobj['snapshot_invalid']
+          return [true, output]
+        else
+          return [false, "#{lvpath} is not snapshot volume"]
+        end
     end
 
     def get_lv_snapshots(lvpath)     
@@ -90,10 +118,8 @@ end
 
 #test code
 #obj = Pgstgtool::Lvm.new
-#puts obj.getLvmAttributes('/dev/vg2/postgres').inspect
-#puts obj.createSnapshot('/dev/vg2/postgres','pawan','10m')
+#puts obj.snapshot_status('/dev/testvg/lvtest_test_1443125113_pgstg').inspect
 
-#puts "snapshot created"
-#obj.getLvmSnapshots('/dev/vg2/postgres').keys.each {|i| obj.removeLvm i }
+
 
   

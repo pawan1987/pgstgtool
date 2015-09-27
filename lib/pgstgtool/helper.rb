@@ -4,6 +4,11 @@ require 'etc'
 module Pgstgtool
   module Helper
     
+    def logger
+      return @logger if @logger
+      @logger = Pgstgtool::CustomLogger.new
+    end
+    
     def is_dir(dir='')
       return "#{dir} doesn't exist" if not File.directory? dir
     end
@@ -13,13 +18,14 @@ module Pgstgtool
       raise "port #{port} already in use" if system("lsof -i:#{port}", out: '/dev/null')
     end
     
-    def mount_point(dir='')
-      raise "Could not figure out stage mount directory #{dir}" if not dir
+    def empty_mount_point(dir='')
+      raise "Could not figure out stage mount directory #{dir}" unless dir
       if Dir.exist?(dir) and not (Dir.entries(dir.to_s) - %w{ . .. }).empty?
-        raise "stage mount point (#{dir}) is not empty"
+        return false
       elsif not Dir.exist?(dir)
         FileUtils.mkdir_p(dir)
       end
+      return true
     end
 
     def is_lvm(lv)
@@ -36,7 +42,6 @@ module Pgstgtool
         lv = '/dev/' + $1 + '/' + $2
 	lv = lv.gsub('--','-')
       end
-	puts 'running from lv'
 	lv
     end
     
@@ -82,7 +87,7 @@ module Pgstgtool
             end
           end
        elsif err == ''
-         puts "#{file} => Good to umount !!"
+         logger.info"#{file} => Good to umount !!"
        else
          raise "Failed to find processes using #{file} => #{err}"
       end
@@ -103,16 +108,27 @@ module Pgstgtool
     
     def as_user(user, &block)
 	  # Find the user in the password database.
-	  u = (user.is_a? Integer) ? Etc.getpwuid(user) : Etc.getpwnam(user)
-	
-	  # Fork the child process. Process.fork will run a given block of code
-	  # in the child process.
-	  Process.fork do
-		 # We're in the child. Set the process's user ID.
-		 Process.uid = u.uid
-	
-		# Invoke the caller's block of code.
-		block.call(user)
+	  begin
+		u = (user.is_a? Integer) ? Etc.getpwuid(user) : Etc.getpwnam(user)
+	  
+		# Fork the child process. Process.fork will run a given block of code
+		# in the child process.
+		Process.fork do
+		   # We're in the child. Set the process's user ID.
+		   Process.uid = u.uid
+	  
+		  # Invoke the caller's block of code.
+		  begin
+			block.call(user)
+		  rescue Exception => e
+			msg = e.message + e.backtrace.inspect
+			logger.error(msg)
+		  end
+		  exit 0
+		end
+	  rescue Exception => e
+        msg = e.message + e.backtrace.inspect
+        logger.error(msg)
 	  end
     end
     

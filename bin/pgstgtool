@@ -4,6 +4,7 @@
 require 'pgstgtool'
 require 'gli'
 require 'json'
+require 'yaml'
 #rescue LoadError
 #  STDERR.puts "In development, you need to use `bundle exec bin/pgstgtool` to run your app"
 #  STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
@@ -12,181 +13,259 @@ require 'json'
 #end
 
 class Pgstgtoolbin
-  
+
   extend GLI::App
-  
+
   program_desc 'Tool helps in managing staging end point for postgres application using lvm snapshot feature'
-  
+
   version Pgstgtool::VERSION
-  
+
   subcommand_option_handling :normal
   arguments :strict
-  
-  
-  desc 'Create staging end point on the host'
+
+
+  desc 'Create staging end point'
   arg_name 'appname'
   command :create do |c|
-    
-    
+
+
     c.desc 'Config file'
-    c.default_value '/etc/pgstgtool/config/config.yml'
     c.flag [:f,:file]
     
+    c.desc 'Log file'
+    c.default_value 'stdout'
+    c.flag [:logfile]
+    
+    c.desc 'log level'
+    c.default_value 'Error'
+    c.flag [:loglevel]
+
     c.desc 'Task Dir'
-    c.flag [:task_dir]
-    
-    c.desc 'App staging port'
-    c.flag [:stage_port]
-    
+    c.flag [:taskdir]
+
+    c.desc 'port'
+    c.flag [:port]
+
     c.desc 'App prod mount point'
-    c.flag [:prod_mount]
-    
-    c.desc 'App stage mount point'
-    c.flag [:stage_mount]
-    
+    c.flag [:proddir]
+
+    c.desc 'App stage data directory'
+    c.flag [:datadir]
+
     c.desc 'postgres version'
-    c.flag [:pgversion]
-    
+    c.flag [:version]
+
     c.desc 'Rake task to run post app stage end point start'
     c.flag [:task]
-    
+
     c.action do |global_options,options,args|
-  
-     app = args.shift
-     
-     if not app
+
+     name = args.shift
+
+     if not name
        raise 'App name should be passed as command line arguement'
      end
-      
-      config ={}
+
       global = {}
       
-      if options[:file] and File.exist?(options[:file])
-          config_file_path = options[:file]
-          begin
-            config_file = YAML.load(File.read(config_file_path))
-          rescue Errno::ENOENT
-            raise "Failed to load config file #{options[:file]}. Not in yaml format !!"
-          end
-        config = config_file['app'][app] if config_file['app'] && config_file['app'][app]
-        global = config_file['global'] if config_file['global'] 
-      end
-    
-      config['app'] = app
+      app = {}
       
-      if options[:task]
-          config['task'] = options[:task]       
-      end    
+      apps = {}
       
-      if options[:stage_port]
-          config['stage_port'] = options[:stage_port]
-      end      
+      apps[name] = app
+           
+      app['task'] = options[:task] if options[:task]
+      
+      app['port'] = options[:port] if options[:port]
+      
+      app['datadir'] = options[:datadir] if options[:datadir]
+      
+      app['rakedir'] = options[:rakedir] if options[:rakedir]
+      
+      app['proddir'] = options[:proddir] if options[:proddir]
+      
+      app['version'] = options[:version] if options[:version]
+      
+      global['file'] = options[:file] if options[:file]
+      global['logfile'] = options[:logfile] if options[:logfile]
+      global['loglevel'] = options[:loglevel] if options[:loglevel]
 
-      if options[:pgversion] 
-	 config['pgversion'] = options[:pgversion]
-      end
+      Pgstgtool::Apps.new({'override_apps' => apps,'override_global' => global,'name' => name}).create
+      sleep 1
 
-      if not config['pgversion']
-      	config['pgversion'] = '9.4'
-      end
-  
-      if options[:stage_mount]
-          config['stage_mount'] = options[:stage_mount]
-        elsif not config[:stage_mount] and global['stage_dir_pattern']
-          if global['stage_dir_pattern'] =~ /VERSION\/APP/
-            config['stage_mount'] = global['stage_dir_pattern'].sub(/\/APP/,"\/#{app}").sub(/\/VERSION/,"\/#{config['pgversion']}")
-          else
-            raise "stage_dir_pattern(#{global['stage_dir_pattern']}) should contain APP keyword"
-          end
-      end        
-  
-      if options[:prod_mount]
-          config['prod_mount'] = options[:prod_mount]
-        elsif not config['prod_mount'] and global['prod_dir_pattern']
-          if global['prod_dir_pattern'] =~ /VERSION\/APP/
-            config['prod_mount'] = global['prod_dir_pattern'].sub(/\/APP/,"\/#{app}").sub(/\/VERSION/,"\/#{config['pgversion']}")
-          else
-            raise "prod_dir_pattern(#{global['prod_dir_pattern']}) should contain APP keyword"
-          end
-      end 
-      
-      if options[:task_dir]
-          config['task_dir'] = options[:task_dir]
-        elsif not config['task_dir'] and global['task_dir']
-          config['task_dir'] = global['task_dir']
-      end
-      
-      puts config.inspect
-      Pgstgtool::Create.new(config).create
-      
-      puts "Stage point is ready and running on port #{config['stage_port']} and data dir #{config['stage_mount']}"
     end
   end
   
-  
- desc 'Delete postgres stage end point on the host'
-  arg_name 'appname'
-  command :delete do |c|
-    
-    
+
+  desc 'Create all staging end point'
+  command :create_all do |c|
+
     c.desc 'Config file'
-    c.default_value '/etc/pgstgtool/config/config.yml'
     c.flag [:f,:file]
     
-    c.desc 'App stage mount point'
-    c.flag [:stage_mount]
+    c.desc 'Log file'
+    c.default_value 'stdout'
+    c.flag [:logfile]
     
-    
+    c.desc 'log level'
+    c.default_value 'Error'
+    c.flag [:loglevel]
+
     c.action do |global_options,options,args|
-  
-     app = args.shift
-     
-     if not app
-       raise 'App name should be passed as command line arguement'
-     end
-      
-      config ={}
+
       global = {}
       
-      if options[:file] and File.exist?(options[:file])
-          config_file_path = options[:file]
-          begin
-            config_file = YAML.load(File.read(config_file_path))
-          rescue Errno::ENOENT
-            raise "Failed to load config file #{options[:file]}. Not in yaml format !!"
-          end
-        config = config_file['app'][app] if config_file['app'] && config_file['app'][app]
-        global = config_file['global'] if config_file['global'] 
-      end
+      global['file'] = options[:file] if options[:file]
+      global['logfile'] = options[:logfile] if options[:logfile]
+      global['loglevel'] = options[:loglevel] if options[:loglevel]
+
+      Pgstgtool::Apps.new({'override_apps' => {},'override_global' => global,'name' => nil}).create
+      sleep 1
+
+    end
+  end
+
+
+  desc 'Delete staging end point on the host'
+  arg_name 'appname'
+  command :delete do |c|
+
+
+    c.desc 'Config file'
+    c.flag [:f,:file]
+
+    c.desc 'Log file'
+    c.default_value 'stdout'
+    c.flag [:logfile]
     
-      config['app'] = app   
+    c.desc 'log level'
+    c.default_value 'Error'
+    c.flag [:loglevel]
 
+    c.desc 'App stage data directory'
+    c.flag [:datadir]
 
-      if options[:pgversion] 
-	 config['pgversion'] = options[:pgversion]
-      end
+    c.desc 'postgres version'
+    c.flag [:version]
 
-      if not config['pgversion']
-      	config['pgversion'] = '9.4'
-      end
+    c.action do |global_options,options,args|
 
-  
-      if options[:stage_mount]
-          config['stage_mount'] = options[:stage_mount]
-        elsif not config[:stage_mount] and global['stage_dir_pattern']
-          if global['stage_dir_pattern'] =~ /VERSION\/APP/
-            config['stage_mount'] = global['stage_dir_pattern'].sub(/\/APP/,"\/#{app}").sub(/\/VERSION/,"\/#{config['pgversion']}")
-          else
-            raise "stage_dir_pattern(#{global['stage_dir_pattern']}) should contain APP keyword"
-          end
-      end        
+     name = args.shift
+
+     if not name
+       raise 'App name should be passed as command line arguement'
+     end
+
+      global = {}
       
-      Pgstgtool::Delete.new(config).delete
+      app = {}
       
-      puts "Deleted stage end point #{config['stage_mount']} !!"
+      apps = {}
+      
+      apps[name] = app
+      
+      app['datadir'] = options[:datadir] if options[:datadir]
+      
+      app['version'] = options[:version] if options[:version]
+      
+      global['file'] = options[:file] if options[:file]
+      global['logfile'] = options[:logfile] if options[:logfile]
+      global['loglevel'] = options[:loglevel] if options[:loglevel]
+
+      Pgstgtool::Apps.new({'override_apps' => apps,'override_global' => global,'name' => name}).delete
+      sleep 1
+
+    end
+  end
+ 
+  desc 'Create all staging end point'
+  command :delete_all do |c|
+
+    c.desc 'Config file'
+    c.flag [:f,:file]
+    
+    c.desc 'Log file'
+    c.default_value 'stdout'
+    c.flag [:logfile]
+    
+    c.desc 'log level'
+    c.default_value 'Info'
+    c.flag [:loglevel]
+
+    c.action do |global_options,options,args|
+
+      global = {}
+      
+      global['file'] = options[:file] if options[:file]
+      global['logfile'] = options[:logfile] if options[:logfile]
+      global['loglevel'] = options[:loglevel] if options[:loglevel]
+
+      Pgstgtool::Apps.new({'override_apps' => {},'override_global' => global,'name' => nil}).delete
+      sleep 1
+
     end
   end
   
+  desc 'Check status of staging end point'
+  arg_name 'appname'
+  command :status do |c|
+
+
+    c.desc 'Config file'
+    c.flag [:f,:file]
+    
+    c.desc 'Log file'
+    c.default_value 'stdout'
+    c.flag [:logfile]
+    
+    c.desc 'log level'
+    c.default_value 'Warning'
+    c.flag [:loglevel]
+
+    c.action do |global_options,options,args|
+
+     name = args.shift
+
+     if not name
+       raise 'App name should be passed as command line arguement'
+     end
+
+      global = {}
+      global['file'] = options[:file] if options[:file]
+      global['logfile'] = options[:logfile] if options[:logfile]
+      global['loglevel'] = options[:loglevel] if options[:loglevel]
+      puts Pgstgtool::Apps.new({'override_apps' => {name => {}},'override_global' => global,'name' => name}).status.to_yaml
+
+    end
+  end
+  
+  desc 'Check status of all staging end points'
+  arg_name 'appname'
+  command :status_all do |c|
+
+
+    c.desc 'Config file'
+    c.flag [:f,:file]
+    
+    c.desc 'Log file'
+    c.default_value 'stdout'
+    c.flag [:logfile]
+    
+    c.desc 'log level'
+    c.default_value 'Warning'
+    c.flag [:loglevel]
+
+    c.action do |global_options,options,args|
+
+      global = {}
+      global['file'] = options[:file] if options[:file]
+      global['logfile'] = options[:logfile] if options[:logfile]
+      global['loglevel'] = options[:loglevel] if options[:loglevel]
+      puts Pgstgtool::Apps.new({'override_apps' => {},'override_global' => global,'name' => nil}).status.to_yaml
+
+    end
+  end
+
   pre do |global,command,options,args|
     # Pre logic here
     # Return true to proceed; false to abort and not call the
@@ -195,19 +274,19 @@ class Pgstgtoolbin
     # on that command only
     true
   end
-  
+
   post do |global,command,options,args|
     # Post logic here
     # Use skips_post before a command to skip this
     # block on that command only
   end
-  
+
   on_error do |exception|
     # Error logic here
     # return false to skip default error handling
     true
   end
-  
+
   exit run(ARGV)
 end
 

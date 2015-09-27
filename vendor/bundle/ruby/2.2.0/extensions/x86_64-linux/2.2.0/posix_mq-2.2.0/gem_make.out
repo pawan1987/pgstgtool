@@ -1,0 +1,24 @@
+/opt/rubies/ruby-2.2.3/bin/ruby -r ./siteconf20150927-29141-17z9wwa.rb extconf.rb
+checking for sys/select.h... yes
+checking for signal.h... yes
+checking for mqueue.h... yes
+checking for pthread.h... yes
+checking for rb_str_set_len()... yes
+checking for rb_thread_blocking_region()... no
+checking for rb_thread_call_without_gvl()... yes
+checking for main() in -lm... yes
+checking for main() in -lrt... yes
+checking for main() in -lpthread... yes
+checking for __mq_oshandle()... no
+checking for mq_timedsend()... yes
+checking for mq_timedreceive()... yes
+creating Makefile
+
+make "DESTDIR=" clean
+
+make "DESTDIR="
+compiling posix_mq.c
+linking shared-object posix_mq_ext.so
+
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 posix_mq_ext.so ./.gem.20150927-29141-alcqgw

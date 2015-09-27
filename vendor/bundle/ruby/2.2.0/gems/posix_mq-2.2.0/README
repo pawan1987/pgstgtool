@@ -1,0 +1,158 @@
+= posix_mq - POSIX Message Queues for Ruby
+
+POSIX message queues allow local processes to exchange data in the form
+of messages.  This API is distinct from that provided by System V
+message queues, but provides similar functionality.
+
+POSIX message queues may be implemented in the kernel for fast,
+low-latency communication between processes on the same machine.
+POSIX message queues are not intended to replace userspace,
+network-aware message queue implementations.
+
+== Features
+
+* Supports message notifications via signals on all platforms
+
+* Supports portable non-blocking operation.  Under Linux 2.6.6+ and
+  FreeBSD 7.2+, POSIX_MQ objects may even be used with event
+  notification mechanisms such as IO.select.
+
+* Supports notifications via block execution in a separate thread
+  on platforms that implement SIGEV_THREAD for mq_notify(3),
+  currently only GNU/Linux.
+
+* Optional timeouts may be applied to send and receive operations.
+
+* Thread-safe blocking operations under Ruby 1.9+, releases GVL
+  before blocking operations.
+
+* Works under Ruby 1.9 and later.
+
+* Documented library API
+
+* Includes a generic "posix-mq-rb" command-line tool with manpage.
+
+* {EventMachine}[http://rubyeventmachine.com/] integration via
+  {em-posixmq}[https://github.com/ibc/em-posixmq]
+
+== Install
+
+Operating system support (or library emulation) for POSIX message queues
+is required.  Most modern GNU/Linux distributions support this
+out-of-the-box.
+
+If you're using a packaged Ruby distribution, make sure you have a C
+compiler and the matching Ruby development libraries and headers.
+
+If you plan on using the command-line client, a tarball installation
+starts up faster and is recommended.  Just grab the tarball from:
+
+http://bogomips.org/ruby_posix_mq/files/
+Unpack it, and run "ruby setup.rb"
+
+Otherwise, via RubyGems: gem install posix_mq
+
+== Usage
+
+The Linux mq_overview(7)
+{manpage}[http://kernel.org/doc/man-pages/online/pages/man7/mq_overview.7.html]
+provides a good overview of programming with POSIX message queues.
+
+Under FreeBSD, you must load the
+{mqueuefs(5)}[http://freebsd.org/cgi/man.cgi?query=mqueuefs]
+kernel module before attempting to use POSIX message queues:
+
+    kldload mqueuefs
+
+Our API matches the POSIX C API closely, see the RDoc for full API
+documentation.  Here is an example of a process communicating
+with itself.  In practice, processes that send will be different
+from processes that receive.
+
+    require 'posix_mq'
+    mq = POSIX_MQ.new("/foo", :rw)
+
+    # hello world
+    mq << "hello world"
+    puts mq.receive.first # => should print "hello world"
+
+    # non-blocking operation
+    mq.nonblock = true
+    begin
+      mq.receive
+    rescue Errno::EAGAIN
+    end
+
+    trap(:USR1) { puts mq.receive.first }
+    mq.notify = :USR1
+    mq.send "fire USR1 handler"
+    # "fire USR1 handler" should be printed now
+
+== Development
+
+You can get the latest source via git from the following locations:
+
+  git://bogomips.org/ruby_posix_mq.git
+  git://repo.or.cz/ruby_posix_mq.git (mirror)
+
+You may browse the code from the web and download the latest snapshot
+tarballs here:
+
+* http://bogomips.org/ruby_posix_mq.git (cgit)
+* http://repo.or.cz/w/ruby_posix_mq.git (gitweb)
+
+Inline patches (from "git format-patch") to the mailing list are
+preferred because they allow code review and comments in the reply to
+the patch.
+
+We will adhere to mostly the same conventions for patch submissions as
+git itself.  See the Documentation/SubmittingPatches document
+distributed with git on on patch submission guidelines to follow.  Just
+don't email the git mailing list or maintainer with Ruby posix_mq patches.
+
+== Contact
+
+All feedback (bug reports, user/development discussion, patches, pull
+requests) go to the mailing list: mailto:ruby-posix-mq@bogomips.org
+
+Send patches (from "git format-patch") with "git send-email" and do not
+send HTML email or attachments.  We are very responsive to email and you
+will usually get a response within 24-72 hours.
+
+== Mailing List Archives
+
+We operate a {public-inbox}[http://public-inbox.org/] which
+feeds the mailing list.  You may subscribe either using
+{ssoma}[http://ssoma.public-inbox.org/] or by sending a mail
+to mailto:ruby-posix-mq+subscribe@bogomips.org
+
+ssoma is a mail archiver/fetcher using git.  It operates in a similar
+fashion to tools such as slrnpull, fetchmail, or getmail.  ssoma
+subscription instructions:
+
+    URL=git://bogomips.org/ruby-posix-mq
+    LISTNAME=ruby-posix-mq
+
+    # to initialize a maildir (this may be a new or existing maildir,
+    # ssoma will not touch existing messages)
+    # If you prefer mbox, use mbox:/path/to/mbox as the last argument
+    # You may also use imap://$MAILSERVER/INBOX for an IMAP account
+    # or imaps:// for an IMAPS account, as well.
+    ssoma add $LISTNAME $URL maildir:/path/to/maildir
+
+    # read with your favorite MUA (only using mutt as an example)
+    mutt -f /path/to/maildir # (or /path/to/mbox)
+
+    # to keep your mbox or maildir up-to-date, periodically run:
+    ssoma sync $LISTNAME
+
+    # your MUA may modify and delete messages from the maildir or mbox,
+    # this does not affect ssoma functionality at all
+
+    # to sync all your ssoma subscriptions
+    ssoma sync
+
+    # You may wish to sync in your cronjob
+    ssoma sync --cron
+
+* Mailing list archives: http://bogomips.org/ruby-posix-mq/

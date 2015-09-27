@@ -1,0 +1,429 @@
+have_header: checking for sys/select.h... -------------------- yes
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic     -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return 0;
+6: }
+/* end */
+
+"gcc -E -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC  conftest.c -o conftest.i"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <sys/select.h>
+/* end */
+
+--------------------
+
+have_header: checking for signal.h... -------------------- yes
+
+"gcc -E -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC  conftest.c -o conftest.i"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <signal.h>
+/* end */
+
+--------------------
+
+have_header: checking for mqueue.h... -------------------- yes
+
+"gcc -E -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC  conftest.c -o conftest.i"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <mqueue.h>
+/* end */
+
+--------------------
+
+have_header: checking for pthread.h... -------------------- yes
+
+"gcc -E -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC  conftest.c -o conftest.i"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <pthread.h>
+/* end */
+
+--------------------
+
+have_func: checking for rb_str_set_len()... -------------------- yes
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic     -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_str_set_len; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_str_set_len; return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_thread_blocking_region()... -------------------- no
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic     -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:57: error: 'rb_thread_blocking_region' undeclared (first use in this function)
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_blocking_region; return 0; }
+                                                         ^
+conftest.c:13:57: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_blocking_region; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_blocking_region; return 0; }
+/* end */
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic     -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:1: warning: implicit declaration of function 'rb_thread_blocking_region' [-Wimplicit-function-declaration]
+ int t(void) { rb_thread_blocking_region(); return 0; }
+ ^
+/tmp/ccLOZMrf.o: In function `t':
+/root/pgstgtool/vendor/bundle/ruby/2.2.0/gems/posix_mq-2.2.0/ext/posix_mq/conftest.c:13: undefined reference to `rb_thread_blocking_region'
+collect2: error: ld returned 1 exit status
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { rb_thread_blocking_region(); return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_thread_call_without_gvl()... -------------------- yes
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic     -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:57: error: 'rb_thread_call_without_gvl' undeclared (first use in this function)
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_call_without_gvl; return 0; }
+                                                         ^
+conftest.c:13:57: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_call_without_gvl; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_thread_call_without_gvl; return 0; }
+/* end */
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic     -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:1: warning: implicit declaration of function 'rb_thread_call_without_gvl' [-Wimplicit-function-declaration]
+ int t(void) { rb_thread_call_without_gvl(); return 0; }
+ ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { rb_thread_call_without_gvl(); return 0; }
+/* end */
+
+--------------------
+
+have_library: checking for main() in -lm... -------------------- yes
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic     -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))main; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))main; return 0; }
+/* end */
+
+--------------------
+
+have_library: checking for main() in -lrt... -------------------- yes
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic    -lm  -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lrt -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))main; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))main; return 0; }
+/* end */
+
+--------------------
+
+have_library: checking for main() in -lpthread... -------------------- yes
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic    -lrt -lm  -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lpthread -lrt -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))main; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))main; return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for __mq_oshandle()... -------------------- no
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic    -lpthread -lrt -lm  -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lpthread -lrt -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:57: error: '__mq_oshandle' undeclared (first use in this function)
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))__mq_oshandle; return 0; }
+                                                         ^
+conftest.c:13:57: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))__mq_oshandle; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))__mq_oshandle; return 0; }
+/* end */
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic    -lpthread -lrt -lm  -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lpthread -lrt -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:1: warning: implicit declaration of function '__mq_oshandle' [-Wimplicit-function-declaration]
+ int t(void) { __mq_oshandle(); return 0; }
+ ^
+/tmp/ccDMunQ7.o: In function `t':
+/root/pgstgtool/vendor/bundle/ruby/2.2.0/gems/posix_mq-2.2.0/ext/posix_mq/conftest.c:13: undefined reference to `__mq_oshandle'
+collect2: error: ld returned 1 exit status
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { __mq_oshandle(); return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for mq_timedsend()... -------------------- yes
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic    -lpthread -lrt -lm  -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lpthread -lrt -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:57: error: 'mq_timedsend' undeclared (first use in this function)
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))mq_timedsend; return 0; }
+                                                         ^
+conftest.c:13:57: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))mq_timedsend; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))mq_timedsend; return 0; }
+/* end */
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic    -lpthread -lrt -lm  -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lpthread -lrt -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:1: warning: implicit declaration of function 'mq_timedsend' [-Wimplicit-function-declaration]
+ int t(void) { mq_timedsend(); return 0; }
+ ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { mq_timedsend(); return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for mq_timedreceive()... -------------------- yes
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic    -lpthread -lrt -lm  -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lpthread -lrt -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:57: error: 'mq_timedreceive' undeclared (first use in this function)
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))mq_timedreceive; return 0; }
+                                                         ^
+conftest.c:13:57: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:13:32: warning: variable 'p' set but not used [-Wunused-but-set-variable]
+ int t(void) { void ((*volatile p)()); p = (void ((*)()))mq_timedreceive; return 0; }
+                                ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { void ((*volatile p)()); p = (void ((*)()))mq_timedreceive; return 0; }
+/* end */
+
+"gcc -o conftest -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/x86_64-linux -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0/ruby/backward -I/opt/rubies/ruby-2.2.3/include/ruby-2.2.0 -I.     -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat  -fPIC conftest.c  -L. -L/opt/rubies/ruby-2.2.3/lib -Wl,-R/opt/rubies/ruby-2.2.3/lib -L. -fstack-protector -rdynamic -Wl,-export-dynamic    -lpthread -lrt -lm  -Wl,-R/opt/rubies/ruby-2.2.3/lib -L/opt/rubies/ruby-2.2.3/lib -lruby -lpthread -lrt -lm  -lpthread -ljemalloc -ldl -lcrypt -lm   -lc"
+conftest.c: In function 't':
+conftest.c:13:1: warning: implicit declaration of function 'mq_timedreceive' [-Wimplicit-function-declaration]
+ int t(void) { mq_timedreceive(); return 0; }
+ ^
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: /*top*/
+ 4: extern int t(void);
+ 5: int main(int argc, char **argv)
+ 6: {
+ 7:   if (argc > 1000000) {
+ 8:     printf("%p", &t);
+ 9:   }
+10: 
+11:   return 0;
+12: }
+13: int t(void) { mq_timedreceive(); return 0; }
+/* end */
+
+--------------------
+

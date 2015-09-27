@@ -1,0 +1,16 @@
+*.so
+*.o
+*.log
+*.rbc
+Makefile
+/GIT-VERSION-FILE
+/local.mk
+/NEWS*
+/.manifest
+/GIT-VERSION-FILE
+/man
+/pkg
+/doc
+/LATEST
+/tmp
+*_1
