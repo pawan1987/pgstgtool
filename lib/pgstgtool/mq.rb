@@ -8,7 +8,7 @@ module Pgstgtool
     def initialize(name = '/pgstgtool_mq')
       @name = name
       @max_msg = 20
-      @msg_size = 2000
+      @msg_size = 20000
     end
     
     def delete
@@ -16,7 +16,7 @@ module Pgstgtool
     end
     
     def write(msg)
-      mq << msg
+      mq << msg[0..5000]
     end
     
     def mq

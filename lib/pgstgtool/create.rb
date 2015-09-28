@@ -19,7 +19,7 @@ module Pgstgtool
     end
 
     def create
-      status = postgres.check_db_read[0]
+      status = postgres.app_dbs[0]
       if status
         logger.info "DB is already running"
         return true
