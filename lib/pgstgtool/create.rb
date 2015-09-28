@@ -18,6 +18,16 @@ module Pgstgtool
       @count = 1
     end
 
+    def check_stuck_postgres
+      pid=`ps aux|grep "bin/postgres -D #{datadir} -p #{port}"|grep -v grep|awk '{print \$2}'`
+      if pid =~ /^\d+(\n)?$/
+        logger.error "stuck process is #{pid}"
+        `kill -15 #{pid}`
+        sleep 3
+      end
+    end
+
+
     def create
       status = postgres.app_dbs[0]
       if status
@@ -28,6 +38,7 @@ module Pgstgtool
            logger.error("snapshot dir #{datadir} is not empty. Running delete command on \'#{app['name']}\'")
            Pgstgtool::Delete.new(app).delete 
         end
+	check_stuck_postgres
       end
       
       begin
