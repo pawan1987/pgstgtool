@@ -14,7 +14,11 @@ module Pgstgtool
     end
     
     def run(user,command)
-      Pgstgtool::Command.run_as_user(user,command)
+      olddir = Dir.pwd
+      Dir.chdir datadir
+      status,out = Pgstgtool::Command.run_as_user(user,command)
+      Dir.chdir olddir
+      [status,out]
     end
     
     def app_dbs

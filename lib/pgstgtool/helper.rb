@@ -9,6 +9,13 @@ module Pgstgtool
       @logger = Pgstgtool::CustomLogger.new
     end
     
+    def log_error(status, out)
+	  if (not status) and (out != '') 
+		logger.error out.gsub("\n",' ')
+	  end
+	  [status,out]
+    end
+    
     def is_dir(dir='')
       return "#{dir} doesn't exist" if not File.directory? dir
     end

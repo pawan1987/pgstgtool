@@ -25,7 +25,7 @@ module Pgstgtool
         return true
       else
         unless empty_mount_point(datadir)
-           logger.error("Running delete command on #{app['name']} as #{datadir} is not empty}")
+           logger.error("snapshot dir #{datadir} is not empty. Running delete command on \'#{app['name']}\'")
            Pgstgtool::Delete.new(app).delete 
         end
       end
@@ -89,17 +89,20 @@ module Pgstgtool
     end
     
     def fix_perm
+      olddir = Dir.pwd
       Dir.chdir datadir
       sleep 2
       FileUtils.chmod_R 0700, Dir.glob('*')
       FileUtils.chmod_R 0700, Dir.glob('.')
       FileUtils.chown_R 'postgres', 'postgres', Dir.glob('.')
       FileUtils.chown_R 'postgres', 'postgres', Dir.glob('*')
+      Dir.chdir olddir
     end
     
     def delete_conf_files
       files_to_rm = ['postgresql.conf','pg_hba.conf','recovery.conf','postmaster.pid']
       dir_to_rm = ['pg_log', 'pg_xlog']
+      oldir = Dir.pwd
       Dir.chdir datadir
       files_to_rm.each do |file|
         run 'postgres', "rm #{file}"
@@ -107,15 +110,19 @@ module Pgstgtool
       dir_to_rm.each do |dir|
         run 'postgres', "rm -rf #{datadir}/#{dir}"
       end
+      Dir.chdir oldir
     end
     
     def copy_conf_files
+      olddir = Dir.pwd
+      Dir.chdir datadir
       src = '/etc/pgstgtool/config/' + version + '/.'
       run 'postgres', "cp -pr #{src} #{datadir}"
       xlog_dir = datadir + '/pg_xlog/archive_status'
       unless File.exists?(xlog_dir)
         run 'postgres', "mkdir -p #{xlog_dir}"
       end
+      Dir.chdir olddir
     end
     
     def pre_start_setup
@@ -168,7 +175,8 @@ module Pgstgtool
     end
     
     def run(user,command)
-      Pgstgtool::Command.run_as_user(user,command)
+      status, out = Pgstgtool::Command.run_as_user(user,command)
+      log_error status, out
     end
     
     def start
@@ -177,12 +185,16 @@ module Pgstgtool
         sleep 2
         status, out = postgres.check_db_write
         if (not status) and (@count < 3)
-            logger.error "Creating tmp db failed\n" + out
+            logger.error "Creating tmp db failed. Trying #{@count} attempt to create staging end point. #{out}"
             @count = @count + 1
             sleep 10
             create
+          elsif status
+            logger.info "Postgres started on port #{port} for #{app['name']}"
+            return true
         end
-        logger.info "postgres started on port #{port} for app:#{app['name']}"
+        logger.error "Postgres failed to start for #{app['name']} on port #{port} "
+        return false
     end
   end
 end

@@ -21,10 +21,10 @@ module Pgstgtool
       logger.debug(command)
       begin
         status,out = Pgstgtool::Command.run(command)
-        if status
-            logger.debug(out)
-          else
-            logger.error(out)
+        if status and ( out != '')
+            logger.debug(out.gsub("\n",' '))
+          elsif out != ''
+            logger.debug(out.gsub("\n",' '))
         end
         [status,out]
       rescue Exception => e

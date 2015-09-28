@@ -20,6 +20,7 @@ module Pgstgtool
       status, out = Pgstgtool::Command.run_as_user('root',command)
       unless status
         if snapshotname =~ /_pgstg$/
+            logger.error "LV #{snapshotname} already exist. Deleting snapshot"
             delete_snapshot(snapshotname)
             command = "#{lvcreate} -L#{size} -s -n #{snapshotname} #{lvpath}"
             status, out = Pgstgtool::Command.run_as_user('root',command)
@@ -43,7 +44,8 @@ module Pgstgtool
     def remove_lv(lvpath)
       raise "Provide complete snapshot lv path => #{lvpath}" if lvpath !~ /^\/dev\/(.*?)\/(.*?)/
       command = "#{lvremove} --force #{lvpath}"
-      Pgstgtool::Command.run_as_user('root',command)
+      status, out = Pgstgtool::Command.run_as_user('root',command)
+      log_error status, out
     end
     
     def get_lv_attributes(lvpath)
