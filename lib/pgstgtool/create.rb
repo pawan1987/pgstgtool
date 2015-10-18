@@ -242,11 +242,24 @@ module Pgstgtool
       status, out = Pgstgtool::Command.run_as_user(user,command)
       log_error status, out
     end
+ 
+    def wait_for_pg
+      counter = 2
+      while counter < 40 do
+        sleep 2
+        logger.info "Waiting for server to start accepting connection: counter #{counter} sec (Max Wait 40sec)"
+        out = `cat #{datadir}/pg_log/*|grep 'database system is ready to accept connections'`
+        if out =~ /ready/
+          break
+        end
+        counter = counter + 2
+      end
+    end
     
     def start
         #postgres.reset_pgxlog
         postgres.start
-        sleep 2
+        wait_for_pg
         status, out = postgres.check_db_write
         if (not status) and (@count < 3)
             logger.error "Creating tmp db failed. Failed attempt #{@count} to create staging end point. #{out}"
