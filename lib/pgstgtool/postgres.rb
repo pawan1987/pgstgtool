@@ -39,7 +39,7 @@ module Pgstgtool
     end
     
     def app_dbs
-      command = "#{psql} -c \"SELECT datname FROM pg_database\" -p #{port}"
+      command = "#{psql} -c \'SELECT datname FROM pg_database\' -p #{port}"
       status, out = run(user,command, datadir)
       if status
         out = out.gsub("\n",' ')
