@@ -4,6 +4,7 @@ require_relative 'logger'
 require_relative 'command'
 require_relative 'postgres'
 
+
 module Pgstgtool
   class Create
 
@@ -26,9 +27,36 @@ module Pgstgtool
         sleep 3
       end
     end
+    
+	def acquire_lock
+	  lock_file = "/tmp/.#{app['name']}.lock"
+	  if File.exists? lock_file
+		puts "inside acquire_lock"
+		age = (Time.now - File.stat(lock_file).mtime).to_i
+		if age > 3600 #1h
+		  File.delete lock_file
+		else
+		  return false
+		end
+		
+	  end
+	  return false if not File.new(lock_file, 'w').flock( File::LOCK_NB | File::LOCK_EX )
+	  return true
+	end
+	
+	def delete_lock
+	  lock_file = "/tmp/.#{app['name']}.lock"
+	  File.delete lock_file if File.exists? lock_file
+	end
 
 
     def create
+	  
+	  if not acquire_lock
+		logger.info "Another process is already running. Delete lock file /tmp/.#{app['name']}.lock if you still want to continue"
+		return 
+	  end
+	  
       status = postgres.app_dbs[0]
       if status
         logger.info "DB is already running"
@@ -38,26 +66,30 @@ module Pgstgtool
            logger.error("snapshot dir #{datadir} is not empty. Running delete command on \'#{app['name']}\'")
            Pgstgtool::Delete.new(app).delete 
         end
-	check_stuck_postgres
+	  check_stuck_postgres
       end
       
       begin
-        prod_mount
-        create_snapshot
+        prod_mount_point
+        postgres_create_check_point
+        create_db_snapshot
         mount_snapshot
         pre_start_setup
         start
+        postgres_delete_check_point
         run_rake_task
+        delete_lock
       rescue Exception => e
         msg = e.message + e.backtrace.inspect
         logger.error(msg)
-        #roll_back
+        roll_back
         return false
-      end          
+      end
+      
     end
     
     #given prod mount dir, it fetches lvpath from /proc/mounts file
-    def prod_mount
+    def prod_mount_point
       mline = open('/proc/mounts').grep(/\ #{app['proddir']}\ /)[0]
       raise "#{app['proddir']} is not a mountpoint" if not mline
       @prod_lvm = mapper_to_lv(mline.split()[0])
@@ -65,11 +97,19 @@ module Pgstgtool
       is_lvm prod_lvm
     end
 
-    def create_snapshot
+	def postgres_create_check_point
+		postgres.create_check_point app['proddir']
+	end
+	
+	def postgres_delete_check_point
+		postgres.delete_check_point app['proddir']
+	end
+	
+    def create_db_snapshot
       unless @stage_lvm
         @stage_lvm = @prod_lvm + '_' + app['name'] + '_pgstg'
       end
-      lvm.create_snapshot(@prod_lvm, @stage_lvm, size)
+      lvm.create_snapshot(@prod_lvm, @stage_lvm, size, app['snapshot_size_min'])
       logger.info("Snapshot created: #{@stage_lvm}")
     end
     
@@ -129,9 +169,20 @@ module Pgstgtool
       Dir.chdir datadir
       src = '/etc/pgstgtool/config/' + version + '/.'
       run 'postgres', "cp -pr #{src} #{datadir}"
-      xlog_dir = datadir + '/pg_xlog/archive_status'
-      unless File.exists?(xlog_dir)
-        run 'postgres', "mkdir -p #{xlog_dir}"
+      status, out = run 'postgres', "/usr/bin/readlink #{app['proddir']}/pg_xlog"
+      
+      prod_xlog_dir = ''
+      
+	  if status and out.chomp =~ /pg_xlog/
+		prod_xlog_dir = out.chomp
+	 else
+	    raise "Couldn't copy pg_xlog symlink" 
+	  end
+      
+      if File.directory?(prod_xlog_dir.chomp)
+        run 'postgres', "cp -pr #{prod_xlog_dir.chomp} #{datadir}"
+	  else
+		raise "Failed copying pg_xlog dir"
       end
       Dir.chdir olddir
     end
@@ -156,6 +207,8 @@ module Pgstgtool
       begin
         Dir.chdir
         umount(datadir)
+        postgres_delete_check_point
+        delete_lock
       rescue Exception => e
         msg = e.message + e.backtrace.inspect
         logger.error(msg)
@@ -191,20 +244,22 @@ module Pgstgtool
     end
     
     def start
-        postgres.reset_pgxlog
+        #postgres.reset_pgxlog
         postgres.start
         sleep 2
         status, out = postgres.check_db_write
         if (not status) and (@count < 3)
-            logger.error "Creating tmp db failed. Trying #{@count} attempt to create staging end point. #{out}"
+            logger.error "Creating tmp db failed. Failed attempt #{@count} to create staging end point. #{out}"
             @count = @count + 1
             sleep 10
+            delete_lock
             create
           elsif status
             logger.info "Postgres started on port #{port} for #{app['name']}"
             return true
         end
         logger.error "Postgres failed to start for #{app['name']} on port #{port} "
+        roll_back
         return false
     end
   end

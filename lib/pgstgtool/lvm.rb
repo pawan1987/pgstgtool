@@ -13,9 +13,25 @@ module Pgstgtool
       @options = options
     end
     
-    def create_snapshot(lvpath, snapshotname, size)
+    def create_snapshot(lvpath, snapshotname, size, min_size)
+      logger.info min_size
       raise "lvname should be complete lv path => #{lvpath}" if lvpath !~ /^\/dev\/(.*?)\/(.*?)/
-      raise "Size should be in multiple of bytes (\d(G|M|g|m)) => #{size}" if size.to_s !~ /^\d+(G|M|g|m)/
+      logger.info("test")
+      raise "Size should be in multiple of bytes (\d(G|M|g|m)) => #{size}" if size.to_s !~ /^(\d+)(G|M|g|m|K|k)/
+      s = $1
+      u = $2
+      raise "Size should be in multiple of bytes (\d(G|M|g|m)) => #{min_size}" if min_size.to_s !~ /^(\d+)(G|M|g|m|k|K)/
+      ms = $1
+      mu = $2
+      logger.info ("Values #{s} + #{u} + #{ms} +#{mu}")
+      size = size_in_mb s,u
+      min_size = size_in_mb ms, mu
+      
+      if size.to_i < min_size.to_i
+        size = "#{min_size}mb"
+      end
+      
+      
       command = "#{lvcreate} -L#{size} -s -n #{snapshotname} #{lvpath}"
       status, out = Pgstgtool::Command.run_as_user('root',command)
       unless status
@@ -32,6 +48,18 @@ module Pgstgtool
         raise "Failed to create snapshot #{out}"
       end
     end
+    
+    def size_in_mb(size, unit)
+      if unit.to_s =~ /G|g/
+        return size.to_i * 1024
+      elsif unit.to_s =~ /M|m/
+        return size
+      elsif unit.to_s =~ /K|k/
+        return (size.to_i / 1024)
+      end
+    end
+    
+    
     
     def lvcreate
       options['lvcreate'] || '/usr/sbin/lvcreate'

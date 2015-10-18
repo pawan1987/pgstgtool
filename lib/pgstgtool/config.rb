@@ -67,6 +67,10 @@ module Pgstgtool
     def loglevel(str)
       global_config['loglevel'] = str
     end
+    
+    def snapshot_size_min(str)
+      global_config['snapshot_size_min'] = str
+    end
   
   end
 end

@@ -17,7 +17,7 @@ module Pgstgtool
     end
     
     def self.run_as_user(user,cmd)
-      command = "/usr/bin/su #{user} -c \'#{cmd}\'"
+      command = "/usr/bin/su #{user} -c \"#{cmd}\""
       logger.debug(command)
       begin
         status,out = Pgstgtool::Command.run(command)

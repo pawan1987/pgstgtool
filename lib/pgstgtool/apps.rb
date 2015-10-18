@@ -13,7 +13,7 @@ module Pgstgtool
       @override_apps = opt['override_apps'] || {}
       @override_global = opt['override_global'] || {}
       @name = opt['name']
-   end
+    end
     
     def logger
       return @logger if @logger
@@ -73,6 +73,7 @@ module Pgstgtool
       logger.info "_______________"
       logger.info "Running create on app:#{app['name']}"
       logger.debug 'Calling create on ' + @app['name'] + ' => ' + @app.inspect
+      @app['snapshot_size_min'] = @global['snapshot_size_min'] if @global['snapshot_size_min']
       Pgstgtool::Create.new(@app).create
     end
     

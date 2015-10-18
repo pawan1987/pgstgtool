@@ -13,6 +13,7 @@ module Pgstgtool
       port
       datadir
       proddir
+      snapshot_size_min
       return @app
     end
     
@@ -24,6 +25,11 @@ module Pgstgtool
     def datadir_pattern
       raise "datadir_pattern is not defined" if (not global['datadir_pattern']) || (global['datadir_pattern'] !~ /VERSION\/APP/)
       global['datadir_pattern']
+    end
+    
+    def snapshot_size_min
+      raise "snapshot_size_min not defined" if (not global['snapshot_size_min']) || (global['snapshot_size_min'] !~ /^\d+(G|g|M|m|K|k)/)
+      global['snapshot_size_min']
     end
     
     def proddir_pattern
