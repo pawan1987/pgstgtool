@@ -115,7 +115,7 @@ module Pgstgtool
     
     def size
       s = app['size'] || '10'
-      if s.to_s =~ /^\d+$/ and s.to_i < 90
+      if s.to_s =~ /^\d+$/ and s.to_i <= 100
         s = lvm.cal_percent_size_mb(@prod_lvm, s.to_i)
       elsif s.to_s !~ /^\d+(G|M|g|m)$/
         raise "Could not figure out the size of snapshot volume to be created (#{s})"

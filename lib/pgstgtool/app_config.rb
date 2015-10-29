@@ -16,6 +16,10 @@ module Pgstgtool
       set 'port', port
     end
     
+    def size(size)
+      set 'size', size
+    end
+
     def version(version)
       set 'version', version
     end
