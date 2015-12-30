@@ -10,18 +10,20 @@ Tool helps to create postgres staging end point on standby nodes using lvm snaps
 Config
 
 ```sh
-app:
-  'sampleapp':
-     stage_port: 5455
-     size: 10
-     prod_mount: '/var/lib/pgsql/data'
-     stage_mount: '/mnt/postgres/buy'
-     task: 'sample'
+global do
+  proddir_pattern '/var/lib/pgsql/VERSION/APP'
+  datadir_pattern '/mnt/postgres/VERSION/APP'
+  task_dir '/etc/pgstgtool/tasks'
+  logfile '/tmp/pgstgtool_log'
+  snapshot_size_min '90480k'
+  loglevel 'Debug'
+end
 
-global:
-  prod_dir_pattern: '/var/lib/postgres/APP'
-  stage_dir_pattern: '/mnt/postgres/APP'
-  task_dir: '/etc/pgstgtool/tasks'
+app 'data' do
+  port 5461
+  version '9.4'
+  size 99
+end
 ```
 * task: rake task to run post staging end point
 * size: lvm snapshot size. Can be specified in multiple of bytes (e.g. '10m') or simple number '10' (percentage of size origin logical volume). default value is 10. 
